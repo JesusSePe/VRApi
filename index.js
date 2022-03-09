@@ -2,7 +2,9 @@ const express = require('express');
 var path = require('path');
 
 const app = express();
-const port = process.env.PORT || 8000; 
+const port = 8000; 
+const mongoDB = process.env.DATABASE_URL;
+const expiration = provess.env.TOKEN_EXPIRATION_TIME;
 
 // Root directory
 app.get('/', (req, res) => {
