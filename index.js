@@ -2,7 +2,7 @@ const express = require('express');
 var path = require('path');
 var mongoose = require('mongoose');
 const app = express();
-const port = 8000; 
+const port = process.env.PORT || 8000; 
 const mongoDB = process.env.DATABASE_URL;
 const expiration = process.env.TOKEN_EXPIRATION_TIME;
 
