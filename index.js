@@ -1,6 +1,7 @@
 const express = require('express');
 var path = require('path');
 var mongoose = require('mongoose');
+var cors = require('cors');
 const app = express();
 const port = process.env.PORT || 8000; 
 const mongoDB = process.env.DATABASE_URL;
@@ -20,7 +21,10 @@ mongoose.connect(mongoDB, {useNewUrlParser: true, useUnifiedTopology: true});
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:' ));
 
-app.use(express.urlencoded());
+
+
+app.use(express.urlencoded());  // Make express read urlencoded body
+app.use(cors());                // Add CORS to express
 
 // Root directory
 app.get('/', (req, res) => {
