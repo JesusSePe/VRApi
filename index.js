@@ -4,8 +4,8 @@ var mongoose = require('mongoose');
 var cors = require('cors');
 const app = express();
 const port = process.env.PORT || 8000; 
-const mongoDB = process.env.DATABASE_URL || "mongodb+srv://m001-student:m001-student@sandbox.qczb2.mongodb.net/ClassVRroom?authSource=admin&replicaSet=Sandbox-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true";
-const expiration = process.env.TOKEN_EXPIRATION_TIME || 1800;
+const mongoDB = process.env.DATABASE_URL;
+const expiration = process.env.TOKEN_EXPIRATION_TIME;
 
 // Mongoose models
 var user = require('./models/user').user;
