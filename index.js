@@ -4,8 +4,8 @@ var mongoose = require('mongoose');
 var cors = require('cors');
 const app = express();
 const port = process.env.PORT || 8000; 
-const mongoDB = process.env.DATABASE_URL;
-const expiration = process.env.TOKEN_EXPIRATION_TIME;
+const mongoDB = process.env.DATABASE_URL || "mongodb+srv://m001-student:m001-student@sandbox.qczb2.mongodb.net/ClassVRroom?authSource=admin&replicaSet=Sandbox-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true";
+const expiration = process.env.TOKEN_EXPIRATION_TIME || 1800;
 
 // Mongoose models
 var user = require('./models/user').user;
@@ -23,8 +23,8 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:' ));
 
 
 
-app.use(express.urlencoded());  // Make express read urlencoded body
-app.use(cors());                // Add CORS to express
+app.use(express.json());    // Make express read application/json
+app.use(cors());            // Add CORS to express
 
 // Root directory
 app.get('/', (req, res) => {
@@ -39,6 +39,7 @@ app.get('/', (req, res) => {
 
 // login directory
 app.get('/api/login', async (req, res) => {
+    console.log(req);
     // retrieve user and password
     var usuari = req.body.usr;
     var contrasenya = req.body.pass;
