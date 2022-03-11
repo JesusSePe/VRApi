@@ -39,10 +39,9 @@ app.get('/', (req, res) => {
 
 // login directory
 app.get('/api/login', async (req, res) => {
-    console.log(req);
     // retrieve user and password
-    var usuari = req.body.usr;
-    var contrasenya = req.body.pass;
+    var usuari = req.query.usr;
+    var contrasenya = req.query.pass;
 
     // Results
     let status = "ERROR";
@@ -86,7 +85,7 @@ app.get('/api/login', async (req, res) => {
 // Logout
 app.get('/api/logout', async (req, res) => {
     // retrieve user token
-    var tkn = req.body.session_token;
+    var tkn = req.query.session_token;
 
     // Default messages
     let status = "ERROR";
