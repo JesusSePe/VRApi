@@ -9,6 +9,7 @@ const expiration = process.env.TOKEN_EXPIRATION_TIME;
 
 // Mongoose models
 var user = require('./models/user').user;
+var course = require('./models/course').course;
 
 // Functions
 const hash = require('./functions/hash.js'); // Hashing functions
@@ -55,7 +56,7 @@ app.get('/api/login', async (req, res) => {
         if (usr != null) {
             // Check password
             if (hash.sha265(contrasenya) == usr.password) {
-                let exp_date = moment().add(expiration, 'seconds');
+                let exp_date = moment().add(expiration, 'milliseconds');
                 status = "OK";
                 message = "Login success";
                 session_token = hash.sha265(usr.email + usr.password + hash.salt());
@@ -97,9 +98,6 @@ app.get('/api/logout', async (req, res) => {
 
         if (usr != null) {
 
-            console.log(moment(usr.session_token_exp_date).utc().valueOf());
-            console.log(moment().utc().valueOf());
-
             if (moment(usr.session_token_exp_date).utc().valueOf() > moment().utc().valueOf()) {
 
                 status = "OK";
@@ -108,6 +106,53 @@ app.get('/api/logout', async (req, res) => {
                 user.findOneAndUpdate( { session_token: tkn }, { "$set": { "session_token": null, "session_token_exp_date": null }} ).exec();
 
                 res.json({status: status, message: message});
+
+            }
+            // Token is expired
+            else {
+                message = "Expired token"
+                res.json({ status: status, message: message });
+            }
+
+        }
+        // user token not found
+        else {
+            message = "invalid token"
+            res.json({ status: status, message: message });
+        }
+
+    }
+    // Token has not been sent
+    else {
+        message = "session_token is required."
+        res.json({ status: status, message: message });
+    }
+
+});
+
+// Get courses
+app.get('/api/get_courses', async (req, res) => {
+    // retrieve user token
+    var tkn = req.query.session_token;
+
+    // Default messages
+    let status = "ERROR";
+    let message = "";
+
+    if (typeof(tkn) != "undefined") {
+
+        let usr = await user.findOne({ session_token: tkn });
+
+        if (usr != null) {
+
+            if (moment(usr.session_token_exp_date).utc().valueOf() > moment().utc().valueOf()) {
+
+                status = "OK";
+                message = "Courses.";
+
+                let courses = await course.find({ $or: [{ "subscribers.teachers": usr.ID }, { "subscribers.students": usr.ID }]});
+
+                res.json({status: status, message: message, course_list: courses});
 
             }
             // Token is expired
