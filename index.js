@@ -150,7 +150,7 @@ app.get('/api/get_courses', async (req, res) => {
                 status = "OK";
                 message = "Courses.";
 
-                let courses = await course.find({ $or: [{ "subscribers.teachers": usr.ID }, { "subscribers.students": usr.ID }]});
+                let courses = await course.find({ $or: [{ "subscribers.teachers": usr.ID }, { "subscribers.students": usr.ID }]}, 'title description');
 
                 res.json({status: status, message: message, course_list: courses});
 
