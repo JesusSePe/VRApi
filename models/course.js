@@ -1,6 +1,8 @@
 var mongoose = require('mongoose');
 
 var courseSchema = new mongoose.Schema({
+    title: String,
+    description: String,
     subscribers: {
         teachers: Array,
         students: Array
