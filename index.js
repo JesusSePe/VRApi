@@ -7,14 +7,10 @@ const port = process.env.PORT || 8000;
 const mongoDB = process.env.DATABASE_URL;
 const expiration = process.env.TOKEN_EXPIRATION_TIME;
 
-// Mongoose models
-var user = require('./models/user').user;
-var course = require('./models/course').course;
 
 // Functions
-const hash = require('./functions/hash.js'); // Hashing functions
 const moment = require('moment');
-const { json } = require('express/lib/response');
+const endpoints = require('./functions/endpoints');
 
 
 // Mongo connection
@@ -32,55 +28,13 @@ app.get('/', (req, res) => {
     res.send("API Working");
 });
 
-// users directory
-/*app.get('/users', async (req, res) => {
-    const users = await user.find({});
-    res.json(users);
-});*/
-
 // login directory
 app.get('/api/login', async (req, res) => {
     // retrieve user and password
     var usuari = req.query.username;
     var contrasenya = req.query.password;
 
-    // Results
-    let status = "ERROR";
-    let message = "";
-    let session_token = "";
-
-    // Check username
-    if (typeof(usuari) != "undefined") {
-        let usr = await user.findOne({ first_name: usuari });
-        
-        if (usr != null) {
-            // Check password
-            if (hash.sha265(contrasenya) == usr.password) {
-                let exp_date = moment().add(expiration, 'milliseconds');
-                status = "OK";
-                message = "Login success";
-                session_token = hash.sha265(usr.email + usr.password + hash.salt());
-                user.findOneAndUpdate( { email: usr.email }, { "$set": { "session_token": session_token, "session_token_exp_date": exp_date }} ).exec();
-                res.json({status: status, message: message, session_token: session_token});
-            }
-            // Password does not match
-            else {
-                message = "Wrong credentials"
-                res.json({status: status, message: message});
-            }
-        }
-        // Username not found
-        else {
-            console.log(usr.password);
-            message = "Authentication error"
-            res.json({status: status, message: message});
-        }
-    }
-    // Username not sent
-    else {
-        message = "username is required";
-        res.json({status: status, message: message});
-    }
+    res.json(await endpoints.login(usuari, contrasenya, expiration));
 });
 
 // Logout
@@ -88,45 +42,7 @@ app.get('/api/logout', async (req, res) => {
     // retrieve user token
     var tkn = req.query.session_token;
 
-    // Default messages
-    let status = "ERROR";
-    let message = "";
-
-    if (typeof(tkn) != "undefined") {
-
-        let usr = await user.findOne({ session_token: tkn });
-
-        if (usr != null) {
-
-            if (moment(usr.session_token_exp_date).utc().valueOf() > moment().utc().valueOf()) {
-
-                status = "OK";
-                message = "Session successfully closed.";
-
-                user.findOneAndUpdate( { session_token: tkn }, { "$set": { "session_token": null, "session_token_exp_date": null }} ).exec();
-
-                res.json({status: status, message: message});
-
-            }
-            // Token is expired
-            else {
-                message = "Expired token"
-                res.json({ status: status, message: message });
-            }
-
-        }
-        // user token not found
-        else {
-            message = "invalid token"
-            res.json({ status: status, message: message });
-        }
-
-    }
-    // Token has not been sent
-    else {
-        message = "session_token is required."
-        res.json({ status: status, message: message });
-    }
+    res.json(await endpoints.logout(tkn));
 
 });
 
@@ -135,45 +51,7 @@ app.get('/api/get_courses', async (req, res) => {
     // retrieve user token
     var tkn = req.query.session_token;
 
-    // Default messages
-    let status = "ERROR";
-    let message = "";
-
-    if (typeof(tkn) != "undefined") {
-
-        let usr = await user.findOne({ session_token: tkn });
-
-        if (usr != null) {
-
-            if (moment(usr.session_token_exp_date).utc().valueOf() > moment().utc().valueOf()) {
-
-                status = "OK";
-                message = "Courses.";
-
-                let courses = await course.find({ $or: [{ "subscribers.teachers": usr.ID }, { "subscribers.students": usr.ID }]}, 'title description');
-
-                res.json({status: status, message: message, course_list: courses});
-
-            }
-            // Token is expired
-            else {
-                message = "Expired token"
-                res.json({ status: status, message: message });
-            }
-
-        }
-        // user token not found
-        else {
-            message = "invalid token"
-            res.json({ status: status, message: message });
-        }
-
-    }
-    // Token has not been sent
-    else {
-        message = "session_token is required."
-        res.json({ status: status, message: message });
-    }
+    res.json(await endpoints.get_courses(tkn));
 
 });
 
@@ -183,45 +61,7 @@ app.get('/api/get_course_details', async (req, res) => {
     var tkn = req.query.session_token;
     var ID = req.query.courseID;
 
-    // Default messages
-    let status = "ERROR";
-    let message = "";
-
-    if (typeof(tkn) != "undefined") {
-
-        let usr = await user.findOne({ session_token: tkn });
-
-        if (usr != null) {
-
-            if (moment(usr.session_token_exp_date).utc().valueOf() > moment().utc().valueOf()) {
-
-                status = "OK";
-                message = "Courses.";
-
-                let courses = await course.findById(ID);
-
-                res.json({status: status, message: message, course_list: courses});
-
-            }
-            // Token is expired
-            else {
-                message = "Expired token"
-                res.json({ status: status, message: message });
-            }
-
-        }
-        // user token not found
-        else {
-            message = "invalid token"
-            res.json({ status: status, message: message });
-        }
-
-    }
-    // Token has not been sent
-    else {
-        message = "session_token is required."
-        res.json({ status: status, message: message });
-    }
+    res.json(await endpoints.courseDetails(tkn, ID));
 
 });
 
