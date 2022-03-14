@@ -41,8 +41,8 @@ app.get('/', (req, res) => {
 // login directory
 app.get('/api/login', async (req, res) => {
     // retrieve user and password
-    var usuari = req.query.usr;
-    var contrasenya = req.query.pass;
+    var usuari = req.query.username;
+    var contrasenya = req.query.password;
 
     // Results
     let status = "ERROR";
@@ -151,6 +151,54 @@ app.get('/api/get_courses', async (req, res) => {
                 message = "Courses.";
 
                 let courses = await course.find({ $or: [{ "subscribers.teachers": usr.ID }, { "subscribers.students": usr.ID }]}, 'title description');
+
+                res.json({status: status, message: message, course_list: courses});
+
+            }
+            // Token is expired
+            else {
+                message = "Expired token"
+                res.json({ status: status, message: message });
+            }
+
+        }
+        // user token not found
+        else {
+            message = "invalid token"
+            res.json({ status: status, message: message });
+        }
+
+    }
+    // Token has not been sent
+    else {
+        message = "session_token is required."
+        res.json({ status: status, message: message });
+    }
+
+});
+
+// Get course by ID
+app.get('/api/get_course_details', async (req, res) => {
+    // retrieve user token
+    var tkn = req.query.session_token;
+    var ID = req.query.courseID;
+
+    // Default messages
+    let status = "ERROR";
+    let message = "";
+
+    if (typeof(tkn) != "undefined") {
+
+        let usr = await user.findOne({ session_token: tkn });
+
+        if (usr != null) {
+
+            if (moment(usr.session_token_exp_date).utc().valueOf() > moment().utc().valueOf()) {
+
+                status = "OK";
+                message = "Courses.";
+
+                let courses = await course.findById(ID);
 
                 res.json({status: status, message: message, course_list: courses});
 
