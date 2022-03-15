@@ -37,7 +37,6 @@ module.exports = {
             }
             // Username not found
             else {
-                console.log(usr.password);
                 message = "Authentication error"
                 return({status: status, message: message});
             }
