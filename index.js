@@ -3,14 +3,13 @@ var path = require('path');
 var mongoose = require('mongoose');
 var cors = require('cors');
 const app = express();
-const env = require('./config.json') || undefined;
+
 const port = process.env.PORT || 8000; 
-const mongoDB = process.env.DATABASE_URL || env.DB_URL;
-const expiration = process.env.TOKEN_EXPIRATION_TIME || env.EXP_TIME;
+const mongoDB = process.env.DATABASE_URL || require('./config.json').DB_URL;
+const expiration = process.env.TOKEN_EXPIRATION_TIME || require('./config.json').EXP_TIME;
 
 
 // Functions
-const moment = require('moment');
 const endpoints = require('./functions/endpoints');
 
 
