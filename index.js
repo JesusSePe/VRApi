@@ -3,9 +3,10 @@ var path = require('path');
 var mongoose = require('mongoose');
 var cors = require('cors');
 const app = express();
+const env = require('./config.json');
 const port = process.env.PORT || 8000; 
-const mongoDB = process.env.DATABASE_URL;
-const expiration = process.env.TOKEN_EXPIRATION_TIME;
+const mongoDB = process.env.DATABASE_URL || env.DB_URL;
+const expiration = process.env.TOKEN_EXPIRATION_TIME || env.EXP_TIME;
 
 
 // Functions
@@ -62,6 +63,16 @@ app.get('/api/get_course_details', async (req, res) => {
     var ID = req.query.courseID;
 
     res.json(await endpoints.courseDetails(tkn, ID));
+
+});
+
+// Export Courses DB Data
+app.get('/api/export_database', async (req, res) => {
+    // retrieve user and password
+    var usuari = req.query.username;
+    var contrasenya = req.query.password;
+
+    res.json(await endpoints.export(usuari, contrasenya));
 
 });
 

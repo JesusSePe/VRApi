@@ -143,12 +143,23 @@ module.exports = {
 
                 if (moment(usr.session_token_exp_date).utc().valueOf() > moment().utc().valueOf()) {
 
-                    status = "OK";
-                    message = "Courses.";
+                    try {
+                        let courses = await course.findById(ID);
+                        if (courses = null) {
 
-                    let courses = await course.findById(ID);
+                            status = "OK";
+                            message = "Courses.";
 
-                    return({status: status, message: message, course_list: courses});
+                            return({status: status, message: message, course_list: courses});
+                        } else {
+                            message = "Course not found"
+                            return({ status: status, message: message });
+                        }                        
+                    } catch {
+                        message = "Course not found"
+                        return({ status: status, message: message });
+                    }
+                    
 
                 }
                 // Token is expired
@@ -169,6 +180,43 @@ module.exports = {
         else {
             message = "session_token is required."
             return({ status: status, message: message });
+        }
+    },
+    export: async function(usuari, contrasenya) {
+        // Results
+        let status = "ERROR";
+        let message = "";
+
+        // Check username
+        if (typeof(usuari) != "undefined") {
+            let usr = await user.findOne({ first_name: usuari });
+            
+            if (usr != null) {
+                // Check password
+                if (hash.sha265(contrasenya) == usr.password) {
+                    status = "OK";
+                    message = "Courses.";
+
+                    let courses = await course.find();
+
+                    return({status: status, message: message, course_list: courses});
+                }
+                // Password does not match
+                else {
+                    message = "Wrong credentials"
+                    return({status: status, message: message});
+                }
+            }
+            // Username not found
+            else {
+                message = "Authentication error"
+                return({status: status, message: message});
+            }
+        }
+        // Username not sent
+        else {
+            message = "username is required";
+            return({status: status, message: message});
         }
     }
 }
