@@ -3,7 +3,11 @@ var path = require('path');
 var mongoose = require('mongoose');
 var cors = require('cors');
 const app = express();
-const env = require('./config.json');
+try {  
+    const env = require('./config.json');
+} catch {
+    env = undefined;
+}
 const port = process.env.PORT || 8000; 
 const mongoDB = process.env.DATABASE_URL || env.DB_URL;
 const expiration = process.env.TOKEN_EXPIRATION_TIME || env.EXP_TIME;
