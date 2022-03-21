@@ -89,6 +89,7 @@ module.exports = {
             return({ status: status, message: message });
         }
     },
+
     get_courses: async function(tkn) {
         // Default messages
         let status = "ERROR";
@@ -130,6 +131,7 @@ module.exports = {
             return({ status: status, message: message });
         }
     },
+
     courseDetails: async function(tkn, ID) {
         // Default messages
         let status = "ERROR";
@@ -145,7 +147,7 @@ module.exports = {
 
                     try {
                         let courses = await course.findById(ID);
-                        if (courses = null) {
+                        if (courses != null) {
 
                             status = "OK";
                             message = "Courses.";
@@ -182,6 +184,7 @@ module.exports = {
             return({ status: status, message: message });
         }
     },
+
     export: async function(usuari, contrasenya) {
         // Results
         let status = "ERROR";
