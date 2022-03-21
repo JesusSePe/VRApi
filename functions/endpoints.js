@@ -146,13 +146,13 @@ module.exports = {
                 if (moment(usr.session_token_exp_date).utc().valueOf() > moment().utc().valueOf()) {
 
                     try {
-                        let courses = await course.findById(ID);
-                        if (courses != null) {
+                        let course_details = await course.findById(ID);
+                        if (course_details != null) {
 
                             status = "OK";
                             message = "Courses.";
 
-                            return({status: status, message: message, course_list: courses});
+                            return({status: status, message: message, course: course_details});
                         } else {
                             message = "Course not found"
                             return({ status: status, message: message });

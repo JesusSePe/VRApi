@@ -7,28 +7,8 @@ var courseSchema = new mongoose.Schema({
         teachers: Array,
         students: Array
     },
-    elements: [{
-        ID: Number,
-        type: String,
-        title: String,
-        description: String,
-        order: Number,
-        contents: String
-    }],
-    tasks: [{
-        ID: Number,
-        type: String,
-        title: String,
-        description: String,
-        order: Number,
-        uploads: [{
-            studentID: Number,
-            text: String,
-            file: String,
-            grade: Number,
-            feedback: String
-        }]
-    }],
+    elements: Array,
+    tasks: Array,
     vr_tasks: [{
         ID: Number,
         title: String,
