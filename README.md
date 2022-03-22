@@ -2,8 +2,8 @@
 API repository for the classVRroom project
 
 # Index
-+ [API url](https://github.com/classVRroom/VRApi/main/README.md#api-url)
-+ [Documentation](https://github.com/classVRroom/VRApi/main/README.md#documentation)
++ [API url](https://github.com/classVRroom/VRApi#api-url)
++ [Documentation](https://github.com/classVRroom/VRApi#documentation)
 # API URL
 > WARNING: This is **NOT** a stable API! <br>
  This API might change at any moment, or even shut down. <br>
