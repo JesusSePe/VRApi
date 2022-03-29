@@ -355,10 +355,10 @@ module.exports = {
             return({ status: status, message: message });
         }
 
-        // Check that record is defined
-        if (typeof(record) == "undefined") {
+        // Check that autograde is defined
+        if (typeof(autograde) == "undefined") {
 
-            message = "record is required."
+            message = "autograde is required."
             return({ status: status, message: message });
         }
 
