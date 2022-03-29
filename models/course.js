@@ -22,6 +22,7 @@ var courseSchema = new mongoose.Schema({
             autograde: {
                 passed_items: Number,
                 failed_items: Number,
+                score: Number,
                 comments: String
             },
             grade: Number,

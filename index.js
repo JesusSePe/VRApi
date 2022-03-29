@@ -75,6 +75,40 @@ app.get('/api/export_database', async (req, res) => {
 
 });
 
+// PIN ENDPOINTS
+// Pin request
+app.get('/api/pin_request', async (req, res) => {
+    // retrieve user token and taskID
+    var tkn = req.query.session_token;
+    var ID = req.query.taskID;
+
+    res.json(await endpoints.pinRequest(tkn, ID));
+
+});
+
+// Start vr exercise
+app.get('/api/start_vr_exercise', async (req, res) => {
+    // retrieve user token and taskID
+    var pin = req.query.PIN;
+
+    res.json(await endpoints.startvr(pin, expiration));
+
+});
+
+// Finish vr exercise
+app.get('/api/finish_vr_exercise', async (req, res) => {
+    // retrieve user token and taskID
+    var pin = req.query.PIN;
+    var autograde = req.query.autograde;
+    var VRexerciseID = req.query.VRexerciseID;
+    var exerciseVersion = req.query.exerciseVersion;
+    var metadata = req.query.metadata;
+
+    res.json(await endpoints.endVR(pin, autograde, VRexerciseID, exerciseVersion, metadata));
+
+});
+
+
 // Crear un servidor web con express el el puerto asignado en la varible port.
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
