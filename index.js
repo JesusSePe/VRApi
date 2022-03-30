@@ -97,6 +97,7 @@ app.get('/api/start_vr_exercise', async (req, res) => {
 
 // Finish vr exercise
 app.get('/api/finish_vr_exercise', async (req, res) => {
+    console.log(req.query);
     // retrieve user token and taskID
     var pin = req.query.PIN;
     var autograde = req.query.autograde;
