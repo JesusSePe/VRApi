@@ -320,7 +320,11 @@ module.exports = {
         }
 
         // Check if pin exists
-        var pinData = await pin.findOne({ pin_number: parseInt(PIN) });
+        try {
+            var pinData = await pin.findOne({ pin_number: parseInt(PIN) });
+        } catch {
+            var pinData = null;
+        }
 
         if (pinData == null) {
 
