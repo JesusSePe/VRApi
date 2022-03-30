@@ -8,5 +8,9 @@ module.exports = {
     // Create a random 6 digit string from 0 to 999999.
     salt: function(){
         return crypto.randomInt(0, 1000000).toString().padStart(6, "0");
+    },
+    // Create a 4 digit token
+    pin: function(){
+        return crypto.randomInt(0, 10000).toString().padStart(4, "0");
     }
 }
