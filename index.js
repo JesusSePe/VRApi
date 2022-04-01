@@ -97,7 +97,6 @@ app.get('/api/start_vr_exercise', async (req, res) => {
 
 // Finish vr exercise
 app.get('/api/finish_vr_exercise', async (req, res) => {
-    console.log(req.query);
     // retrieve user token and taskID
     var pin = req.query.PIN;
     var autograde = req.query.autograde;
@@ -105,7 +104,7 @@ app.get('/api/finish_vr_exercise', async (req, res) => {
     var exerciseVersion = req.query.exerciseVersion;
     var metadata = req.query.metadata;
 
-    res.json(await endpoints.endVR(pin, autograde, VRexerciseID, exerciseVersion, metadata));
+    res.json(await endpoints.endVR(pin, autograde, VRexerciseID, exerciseVersion, metadata, expiration));
 
 });
 
