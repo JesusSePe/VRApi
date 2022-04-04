@@ -416,14 +416,15 @@ module.exports = {
         // add exercise
         let newCompletion = {
             studentID: pinData.user_id, 
-            position_data: position_data, 
-            autograde: [{
+            position_data: JSON.parse(position_data), 
+            autograde: {
                 passed_items: autograde[0].passed_items, 
                 failed_items: autograde[0].failed_items, 
                 score: autograde[0].score, 
                 comments: autograde[0].comments
-            }]
+            }
         };
+
         
         await course.updateOne(
             {vr_tasks: {$elemMatch: {ID: pinData.VRtaskID}}},
