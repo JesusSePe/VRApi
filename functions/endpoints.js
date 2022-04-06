@@ -431,6 +431,8 @@ module.exports = {
             { $push: { "vr_tasks.$.completions": newCompletion } }
         );
 
+        await pin.deleteOne({pin_number: PIN});
+
         status = "OK";
         message = "Exercise data successfully stored";
         return ({status: status, message: message});
