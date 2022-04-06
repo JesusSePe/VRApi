@@ -3,6 +3,10 @@ var path = require('path');
 var mongoose = require('mongoose');
 var cors = require('cors');
 const app = express();
+var bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 
 const port = process.env.PORT || 8000; 
 const mongoDB = process.env.DATABASE_URL || require('./config.json').DB_URL;
@@ -96,15 +100,14 @@ app.get('/api/start_vr_exercise', async (req, res) => {
 });
 
 // Finish vr exercise
-app.get('/api/finish_vr_exercise', async (req, res) => {
-    // retrieve user token and taskID
-    var pin = req.query.PIN;
-    var autograde = req.query.autograde;
-    var VRexerciseID = req.query.VRexerciseID;
-    var exerciseVersion = req.query.exerciseVersion;
-    var metadata = req.query.metadata;
+app.post('/api/finish_vr_exercise', async (req, res) => {
+    var pin = req.body.PIN;
+    var autograde = req.body.autograde;
+    var VRexerciseID = req.body.VRexerciseID;
+    var exerciseVersion = req.body.exerciseVersion;
+    var metadata = req.body.metadata;
 
-    res.json(await endpoints.endVR(pin, autograde, VRexerciseID, exerciseVersion, metadata));
+    res.json(await endpoints.endVR(pin, autograde, VRexerciseID, exerciseVersion, metadata, expiration));
 
 });
 

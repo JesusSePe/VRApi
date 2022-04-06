@@ -262,11 +262,14 @@ module.exports = {
         // Check if user has already a pin
         let checkUsrPin = await pin.findOne({user_id: usr.ID}).exec();
 
+        // Check that user has no pin assigned, and in case of having one already, is for another exercise.
         if (checkUsrPin != null) {
-            status = "OK";
-            message = "Pin";
-            PIN = checkUsrPin.pin_number.toString();
-            return ({status: status, message: message, PIN: PIN});
+            if (checkUsrPin.VRtaskID == ID) {
+                status = "OK";
+                message = "Pin";
+                PIN = checkUsrPin.pin_number.toString();
+                return ({status: status, message: message, PIN: PIN});
+            }
         }
 
         // Create and check that pin doesn't exist.
@@ -320,7 +323,11 @@ module.exports = {
         }
 
         // Check if pin exists
-        var pinData = await pin.findOne({ pin_number: parseInt(PIN) });
+        try {
+            var pinData = await pin.findOne({ pin_number: parseInt(PIN) });
+        } catch {
+            var pinData = null;
+        }
 
         if (pinData == null) {
 
@@ -331,7 +338,8 @@ module.exports = {
 
         // Check if pin is still valid
         if (moment(pinData.expiration_date).add(expiration, 'milliseconds').utc().valueOf() < moment().utc().valueOf()) {
-            pin.find({pin_number:PIN}).remove().exec();
+            //pin.find({pin_number:PIN}).remove().exec();
+            pin.deleteOne( {pin_number: PIN} ).exec();
             message = "Expired pin"
             return({ status: status, message: message });
         }
@@ -343,7 +351,7 @@ module.exports = {
         return ({status: status, message: message, username: usr.first_name, VRexerciseID: pinData.VRexID, minExerciseVersion: pinData.versionID});
     },
 
-    endVR: async function(pin, autograde, VRexerciseID, exerciseVersion, position_data){
+    endVR: async function(PIN, autograde, VRexerciseID, exerciseVersion, position_data, expiration){
         // Default messages
         let status = "ERROR";
         let message = "";
@@ -355,10 +363,10 @@ module.exports = {
             return({ status: status, message: message });
         }
 
-        // Check that record is defined
-        if (typeof(record) == "undefined") {
+        // Check that autograde is defined
+        if (typeof(autograde) == "undefined") {
 
-            message = "record is required."
+            message = "autograde is required."
             return({ status: status, message: message });
         }
 
@@ -384,7 +392,11 @@ module.exports = {
         }
 
         // Check if pin exists
-        var pinData = await pin.findOne({ pin_number: parseInt(PIN) });
+        try {
+            var pinData = await pin.findOne({ pin_number: parseInt(PIN) });
+        } catch {
+            var pinData = null;
+        }
 
         if (pinData == null) {
 
@@ -393,25 +405,33 @@ module.exports = {
 
         }
 
+        // Check if pin is still valid
+        if (moment(pinData.expiration_date).add(expiration, 'milliseconds').utc().valueOf() < moment().utc().valueOf()) {
+            //pin.find({pin_number:PIN}).remove().exec();
+            pin.deleteOne( {pin_number: PIN} ).exec();
+            message = "Expired pin"
+            return({ status: status, message: message });
+        }
+
         // add exercise
         let newCompletion = {
             studentID: pinData.user_id, 
-            position_data: position_data, 
-            autograde: [{
-                passed_items: autograde.passed_items, 
-                failed_items: autograde.failed_items, 
-                score: autograde.score, 
-                comments: autograde.comments
-            }]
+            position_data: JSON.parse(position_data), 
+            autograde: {
+                passed_items: autograde[0].passed_items, 
+                failed_items: autograde[0].failed_items, 
+                score: autograde[0].score, 
+                comments: autograde[0].comments
+            }
         };
 
-        let VRdata = await course.findOne( {vr_tasks: {$elemMatch: {ID: ID}}} ).exec();
-        VRdata.vr_tasks.find(tasks => tasks.ID == ID).push(newCompletion);
         
-        saveData.save(function(err, doc) {
-            if (err) return console.error(err);
-        });
+        await course.updateOne(
+            {vr_tasks: {$elemMatch: {ID: pinData.VRtaskID}}},
+            { $push: { "vr_tasks.$.completions": newCompletion } }
+        );
 
+        await pin.deleteOne({pin_number: PIN});
 
         status = "OK";
         message = "Exercise data successfully stored";
